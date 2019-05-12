@@ -42,4 +42,23 @@ router.get('/api/users/:id/avatar', async (req, res) => {
   }
 })
 
+router.delete('/api/users/:id/avatar', async(req, res) => {
+  const id = req.params.id
+
+  let userData = loadData('userData.json')
+  // This finds the index of the object from the array containing the user data based on the user id
+  const userObjectIndex = R.findIndex(R.propEq('id', req.params.id))(userData)
+
+  if( userData === [] || userObjectIndex === -1 ) {
+    res.send(`User ${id} not found the userData`)
+  } else {
+    const removingUserData = userData[userObjectIndex]
+    // This removes one object from the array of objects based on the index
+    userData = R.remove(userObjectIndex,1,userData)
+    fs.writeFileSync('userData.json',JSON.stringify(userData))
+
+    res.send(removingUserData)
+  }
+})
+
 module.exports = router
